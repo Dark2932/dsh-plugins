@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Dark Toolbox">
+  <defs>
+    <linearGradient id="dt-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1d2b49"/>
+      <stop offset="1" stop-color="#0b1220"/>
+    </linearGradient>
+    <linearGradient id="dt-lid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2dd4bf"/>
+      <stop offset="1" stop-color="#14b8a6"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#dt-bg)"/>
+  <path d="M24 22v-3.5a5.5 5.5 0 0 1 5.5-5.5h5a5.5 5.5 0 0 1 5.5 5.5V22"
+        fill="none" stroke="#5eead4" stroke-width="3" stroke-linecap="round"/>
+  <rect x="11" y="22" width="42" height="9" rx="3" fill="url(#dt-lid)"/>
+  <rect x="15" y="34" width="34" height="18" rx="4" fill="#16233b" stroke="#5eead4" stroke-width="2.4"/>
+  <path d="M27 34h10v4.5a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2z" fill="#0b1220"/>
+  <circle cx="32" cy="37.2" r="1.6" fill="#facc15"/>
+  <path d="M47 14.5l1.1 3.1 3.1 1.1-3.1 1.1-1.1 3.1-1.1-3.1-3.1-1.1 3.1-1.1z"
+        fill="#facc15" opacity="0.95"/>
+</svg>
