@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="SSH Link">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#123b57"/>
+      <stop offset="1" stop-color="#0b2236"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#4fd1c5"/>
+      <stop offset="1" stop-color="#63b3ed"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#bg)"/>
+  <rect x="9" y="13" width="46" height="30" rx="6" fill="#0a1b29" stroke="#2c5a78" stroke-width="1.5"/>
+  <path d="M16 23l6 5-6 5" fill="none" stroke="url(#accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M27 33h5" fill="none" stroke="url(#accent)" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M40 23.5h9M40 28.5h6" fill="none" stroke="#5b8aa8" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M22 43v5a4 4 0 004 4h4" fill="none" stroke="#63b3ed" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M42 43v5a4 4 0 01-4 4h-4" fill="none" stroke="#4fd1c5" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="32" cy="52" r="3.4" fill="#4fd1c5"/>
+  <circle cx="32" cy="50" r="6.4" fill="none" stroke="#4fd1c5" stroke-opacity=".35" stroke-width="1.6"/>
+</svg>

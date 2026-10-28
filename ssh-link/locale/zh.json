@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "SSH 连接",
+    "description": "通过 SSH 连接远端服务器，让 Agent 直接在远端执行命令、修改文件；DSH 仍运行在本地。"
+  }
+}

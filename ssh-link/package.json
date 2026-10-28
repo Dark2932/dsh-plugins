@@ -1,0 +1,43 @@
+{
+  "name": "ssh-link",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "SSH remote connections for DeepSeek Harness: manage hosts from Settings and let the agent run commands and edit files on the remote server. 为 DSH 添加类 XShell 的 SSH 连接：本地运行，远端修改。",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    }
+  },
+  "dependencies": {
+    "ssh2": "^1.17.0"
+  }
+}

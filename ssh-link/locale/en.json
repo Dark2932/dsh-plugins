@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "SSH Link",
+    "description": "Connect to remote servers over SSH and let the agent run commands and edit files there while DSH keeps running locally."
+  }
+}
