@@ -17,10 +17,8 @@
 
 #### 安装
 
-`https://github.com/Dark2932/dsh-plugins#path:/dark-toolbox`
-
 ```sh
-dsh plugin --profile desktop add "https://github.com/Dark2932/dsh-plugins#path:/dark-toolbox"
+dsh plugin --profile desktop add "https://github.com/Dark2932/dsh-plugins#path:/dark-toolbox" //桌面端请直接输入引号内地址
 ```
 
 ### ssh-link
@@ -35,10 +33,8 @@ dsh plugin --profile desktop add "https://github.com/Dark2932/dsh-plugins#path:/
 
 #### 安装
 
-`https://github.com/Dark2932/dsh-plugins#path:/ssh-link`
-
 ```sh
-dsh plugin --profile desktop add "https://github.com/Dark2932/dsh-plugins#path:/ssh-link"
+dsh plugin --profile desktop add "https://github.com/Dark2932/dsh-plugins#path:/ssh-link" //桌面端请直接输入引号内地址
 ```
 
 ## 开发
