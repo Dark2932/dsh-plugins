@@ -13,7 +13,7 @@
 - 全局“新会话”默认在“未分组”里创建，不再自动选择工作区；
 - 所有功能都在“设置 → Dark工具集”里，各自有开关。
 
-[插件说明](dark-toolbox/README.md) · [开发文档](.docs/dark-toolbox.md)
+[插件说明](dark-toolbox/README.md) · [开发文档](_docs/dark-toolbox.md)
 
 ### ssh-link
 
@@ -23,7 +23,7 @@
 - 内置远端终端；
 - Agent 通过 `ssh_*` 工具在远端执行命令、读写文件、查找和搜索。
 
-[插件说明](ssh-link/README.md) · [开发文档](.docs/ssh-link.md)
+[插件说明](ssh-link/README.md) · [开发文档](_docs/ssh-link.md)
 
 ## 安装
 
@@ -76,7 +76,7 @@ Windows 桌面端自带 CLI（默认安装路径），但默认没有加入 PATH
 
 ## 开发
 
-每个插件的实现说明、关键代码和验证清单在 [`.docs/`](.docs/README.md)。修改代码后请同步更新对应文档和插件 README，约定见 [AGENTS.md](AGENTS.md)。
+每个插件的实现说明、关键代码和验证清单在 [`_docs/`](_docs/README.md)。修改代码后请同步更新对应文档和插件 README，约定见 [AGENTS.md](AGENTS.md)。
 
 ## License
 

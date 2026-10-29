@@ -58,7 +58,7 @@ pnpm install --ignore-scripts
 
 ## 开发
 
-实现说明、关键代码和测试方法见 [`.docs/ssh-link.md`](../.docs/ssh-link.md)。
+实现说明、关键代码和测试方法见 [`_docs/ssh-link.md`](../_docs/ssh-link.md)。
 
 ## License
 

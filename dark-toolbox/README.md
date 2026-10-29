@@ -55,7 +55,7 @@ Dark 工具集：让 DSH 的插件安装和日常会话更顺手。保持轻量�
 
 ## 开发
 
-实现说明、关键代码和验证清单见 [`.docs/dark-toolbox.md`](../.docs/dark-toolbox.md)。
+实现说明、关键代码和验证清单见 [`_docs/dark-toolbox.md`](../_docs/dark-toolbox.md)。
 
 ## License
 
