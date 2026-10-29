@@ -13,11 +13,19 @@ Dark 工具集：让 DSH 的插件安装和日常会话更顺手。保持轻量�
 
 ### 安装
 
-桌面端：**设置 → 插件 → 添加插件**，填入本目录的绝对路径。
+桌面端：**设置 → 插件 → 添加插件**，填入：
 
-终端：`dsh plugin --profile desktop add "link:<本目录路径>"`。
+`https://github.com/Dark2932/dsh-plugins#path:/dark-toolbox`
 
-完整步骤见[主仓库 README](../README.md)。
+终端：
+
+```sh
+dsh plugin --profile desktop add "https://github.com/Dark2932/dsh-plugins#path:/dark-toolbox"
+```
+
+本地开发时，可以填本目录的绝对路径，终端用 `link:<本目录路径>`。
+
+桌面端完整步骤见[主仓库 README](../README.md)。
 
 ### 后台安装
 

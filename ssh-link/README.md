@@ -12,20 +12,21 @@
 
 ## 安装
 
-远端需要 POSIX 系统（Linux / macOS），开启 SSH 和 `sftp-server`。本地需要 `pnpm` 来安装 `ssh2` 依赖。
+远端需要 POSIX 系统（Linux / macOS），开启 SSH 和 `sftp-server`。本地需要 `pnpm`。
 
-先在插件目录安装依赖：
+桌面端：**设置 → 插件 → 添加插件**，填入：
+
+`https://github.com/Dark2932/dsh-plugins#path:/ssh-link`
+
+终端：
 
 ```sh
-cd E:/projects/Dark2932/dsh-plugins/ssh-link
-pnpm install --ignore-scripts
+dsh plugin --profile desktop add "https://github.com/Dark2932/dsh-plugins#path:/ssh-link"
 ```
 
-桌面端：**设置 → 插件 → 添加插件**，填入本目录的绝对路径。
+安装时会自动安装 `ssh2`。只有用本地目录（`link:`）开发时，才需要先在插件目录执行 `pnpm install --ignore-scripts`。
 
-终端：`dsh plugin --profile desktop add "link:E:/projects/Dark2932/dsh-plugins/ssh-link"`。
-
-完整步骤见[主仓库 README](../README.md)。
+桌面端完整步骤见[主仓库 README](../README.md)。
 
 ## 使用
 
