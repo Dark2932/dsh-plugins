@@ -1,20 +1,62 @@
 # dark-toolbox
 
-Dark 工具集 for DeepSeek Harness — practical, lightweight, optimized.
+Dark 工具集：让 DSH 的插件安装和日常会话更顺手。保持轻量，不需要额外依赖或构建步骤。
 
-## Features
+## 功能
 
-- **Background plugin installs.** A small Host queue drives `pluginManager.installBundle` with its own request id, so pnpm keeps running while you keep using DSH. Installs started anywhere in the profile (including the built-in Plugins dialog) are observed through the manager's `install-state` / `install-log` events.
-- **Live install list.** A third tab beside **Installed** and **Discover** in the Plugins page, registered through the `plugins.tab` slot, showing each install's phase, registry attempt, elapsed time, real-time pnpm output, result, and failures.
-- **Dark工具集 settings page.** Every feature has a switch there; choices persist per browser.
+- **后台安装插件**：在“安装列表”或插件页发起安装后，任务在 DSH 后台继续，离开页面、刷新页面都不会中断。
+- **安装列表**：插件页“已安装”“发现”右侧的第三个标签页，显示排队、预检、安装、启用、失败等状态，以及实时 pnpm 输出。
+- **未分组新对话**：全局“新会话”按钮和快捷键默认在“未分组”里新建，不再自动选择最近的工作区；每个工作区分组上的“+”仍然在该工作区新建。
+- **统一设置页**：“设置 → Dark工具集”里每个功能都有独立开关，设置保存在当前浏览器。
 
-## Install
+## 使用
 
-Install this directory as a bundle in the current profile: use the install field on the Plugins page, or the `plugin_manager` `install_bundle` action with the absolute path of this directory. No dependencies or build step are required.
+### 安装
 
-## How it works
+桌面端：**设置 → 插件 → 添加插件**，填入本目录的绝对路径。
 
-- Host half (`index.js`) registers `/dark-toolbox/api`: JSON actions (`install`, `cancel`, `approve`, `dismiss`, `clear`, `status`) plus a Server-Sent Events stream for live progress. It subscribes to the plugin manager's install events and keeps a bounded in-memory history for the current DSH process.
-- Client half (`client.js`) registers the settings section (`settings.section`) and the install tab (`plugins.tab`). It uses only React from the host module table and theme tokens for styling.
+终端：`dsh plugin --profile desktop add "link:<本目录路径>"`。
 
-Installs run one at a time; additional requests are queued. Failed runs that report `pendingBuilds` show an **Allow these scripts and retry** action. Completed install history is not persisted across a DSH restart.
+完整步骤见[主仓库 README](../README.md)。
+
+### 后台安装
+
+打开插件页的“安装列表”，输入包名、Git 地址、tarball 或本地目录，点“后台安装”。任务会排队执行，进度和日志都在列表里。
+
+- 任务运行时可以取消。
+- 构建脚本被 pnpm 拦截时，列表里会出现“允许脚本并重试”。
+- 关闭“后台安装”开关后，安装列表仍会显示历史，但不能再从这里发起新任务。
+
+### 未分组新对话
+
+- 点侧栏顶部的“新会话”，或按新建会话快捷键：会话直接出现在“未分组”，不选工作区。
+- 也可以点会话列表下方的“未分组新对话”，即使默认开关关着也能用。
+- 想恢复 DSH 原来的行为：**设置 → Dark工具集 → 会话**，关闭“新对话默认无工作区”。
+
+### 设置
+
+“设置 → Dark工具集”包含：
+
+| 开关 | 作用 |
+| --- | --- |
+| 后台安装 | 是否允许从安装列表发起安装 |
+| 安装列表页 | 是否在插件页显示“安装列表”标签页 |
+| 安装前预检 | 安装前先确认包是可安装的插件 |
+| 实时输出 | 在任务里显示 pnpm 输出 |
+| 保留已完成任务 | 成功的任务是否留在列表里 |
+| 新对话默认无工作区 | 全局“新会话”是否创建未分组会话 |
+
+## 说明
+
+- 安装记录只保存在当前 DSH 进程内，重启后清空。
+- 设置按浏览器保存，换浏览器或清除站点数据后会回到默认值。
+- 未分组会话需要一个工作目录，默认使用当前用户的主目录。
+- 关闭“新对话默认无工作区”后，侧栏底部的“未分组新对话”入口仍然保留。
+
+## 开发
+
+实现说明、关键代码和验证清单见 [`.docs/dark-toolbox.md`](../.docs/dark-toolbox.md)。
+
+## License
+
+MIT

@@ -1,9 +1,9 @@
 {
   "name": "dark-toolbox",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Dark Toolbox for DeepSeek Harness: background plugin installs with a live install list, plus one lightweight settings page for every feature.",
+  "description": "Dark Toolbox for DeepSeek Harness: background plugin installs with a live install list, ungrouped new chats, plus one lightweight settings page for every feature.",
   "license": "MIT",
   "engines": {
     "node": ">=20"
@@ -31,8 +31,12 @@
       "platform": "web",
       "immediately": true,
       "inject": [
+        "@deepseek-ai/dsh-api-session-controller",
+        "@deepseek-ai/dsh-api-workspace-controller",
         "@deepseek-ai/dsh-client-ui-settings",
         "@deepseek-ai/dsh-client-ui-plugin-manager",
+        "@deepseek-ai/dsh-client-ui-workspace",
+        "@deepseek-ai/dsh-client-ui-sidebar",
         "@deepseek-ai/dsh-client-locale"
       ]
     }

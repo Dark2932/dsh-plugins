@@ -4,7 +4,7 @@ window.__ModuleLoader__.load({
     const React = require('react')
     const h = React.createElement
     const NS = 'dark-toolbox'
-    const VERSION = '0.1.0'
+    const VERSION = '0.2.0'
     const STORAGE_KEY = 'dsh.dark-toolbox.settings.v1'
 
     // ---------------------------------------------------------------------
@@ -27,6 +27,14 @@ window.__ModuleLoader__.load({
         liveLogDesc: 'Show the pnpm output stream inside each install task. Useful when a run fails.',
         keepFinishedTitle: 'Keep finished tasks',
         keepFinishedDesc: 'Successful tasks stay in the list. When off, they disappear as soon as they finish.',
+        groupSession: 'Sessions',
+        noWorkspaceTitle: 'New chats start ungrouped',
+        noWorkspaceDesc: 'The sidebar New Session button and its shortcut create the chat under Ungrouped instead of the most recent workspace. The + on a workspace group still creates in that workspace.',
+        noWorkspaceEntry: 'The entry below the session list lets you start an ungrouped chat at any time, even when this switch is off.',
+        overrideUnavailable: 'This DSH version does not expose the New Session default, so the switch cannot change it. Use the sidebar entry instead.',
+        newUngroupedAction: 'New ungrouped chat',
+        creatingUngrouped: 'Creating…',
+        newUngroupedFailed: 'Could not create the chat.',
         groupAbout: 'About',
         aboutText: 'The queue runs inside the DSH process: closing or refreshing the page does not stop an install. Finished tasks are kept for this DSH run only.',
         formTitle: 'Install a plugin',
@@ -95,6 +103,14 @@ window.__ModuleLoader__.load({
         liveLogDesc: '在安装任务里显示 pnpm 的实时输出，排查失败时很有用。',
         keepFinishedTitle: '保留已完成任务',
         keepFinishedDesc: '成功的任务继续留在列表里；关闭后任务一完成就从列表收起。',
+        groupSession: '会话',
+        noWorkspaceTitle: '新对话默认无工作区',
+        noWorkspaceDesc: '侧栏的“新会话”按钮和快捷键会直接在“未分组”里新建，不再选最近的工作区；工作区分组上的“+”仍然在该工作区新建。',
+        noWorkspaceEntry: '会话列表下方的入口随时可以新建未分组对话，即使这个开关关着。',
+        overrideUnavailable: '当前 DSH 版本没有开放“新会话”的默认入口，这个开关无法改变它；请使用侧栏入口。',
+        newUngroupedAction: '未分组新对话',
+        creatingUngrouped: '正在新建…',
+        newUngroupedFailed: '无法新建对话。',
         groupAbout: '关于',
         aboutText: '安装队列运行在 DSH 进程内：关闭或刷新页面都不会中断安装。已完成记录只在本次 DSH 运行期间保留。',
         formTitle: '安装新插件',
@@ -182,6 +198,7 @@ window.__ModuleLoader__.load({
       precheck: true,
       liveLog: true,
       keepFinished: true,
+      noWorkspaceNewSession: true,
     }
 
     function loadSettings() {
@@ -224,6 +241,73 @@ window.__ModuleLoader__.load({
 
     function useSettings() {
       return React.useSyncExternalStore(subscribeSettings, getSettings, getSettings)
+    }
+
+    // ---------------------------------------------------------------------
+    // ungrouped sessions (no workspace)
+    // ---------------------------------------------------------------------
+
+    /** Whether the global New Session default is currently ours, for the settings hint. */
+    let newSessionOverrideReady = false
+
+    function sessionServices() {
+      const ctx = activeContext
+      if (!ctx?.get) return null
+      const uiWorkspace = ctx.get('uiWorkspace')
+      const sessions = ctx.get('sessions')
+      const workspaces = ctx.get('workspaces')
+      if (!uiWorkspace || !sessions || !workspaces) return null
+      return { uiWorkspace, sessions, workspaces }
+    }
+
+    /**
+     * A blank Session outside every Workspace is already the Ungrouped row.
+     * Reuse it so New Session returns to an unsent draft, like a Workspace does.
+     */
+    function findUngroupedBlank(sessionState, workspaceState) {
+      const members = new Set()
+      for (const workspace of workspaceState.items || []) {
+        for (const id of workspace.sessionIds || []) members.add(id)
+      }
+      const archived = new Set(workspaceState.archivedSessionIds || [])
+      return (sessionState.ids || []).find((id) => {
+        const summary = sessionState.byId?.[id]
+        return summary?.blank === true && !members.has(id) && !archived.has(id)
+      })
+    }
+
+    async function createUngroupedSession() {
+      const services = sessionServices()
+      if (!services) throw new Error(tr('newUngroupedFailed'))
+      const { uiWorkspace, sessions, workspaces } = services
+      const workspaceState = workspaces.list.getSnapshot()
+      const sessionState = sessions.list.getSnapshot()
+      let sessionId = findUngroupedBlank(sessionState, workspaceState)
+      if (sessionId === undefined) {
+        if (typeof sessions.create !== 'function') throw new Error(tr('newUngroupedFailed'))
+        // The Host's fallback is its process directory; the user's home is the
+        // neutral place for a chat that belongs to no project.
+        const home = activeContext?.remote?.$host?.home
+        sessionId = await sessions.create(home ? { cwd: home } : {})
+      }
+      uiWorkspace.openSession(sessionId)
+      return sessionId
+    }
+
+    function launchUngroupedSession() {
+      return createUngroupedSession().catch((error) => {
+        const message = error?.message || tr('newUngroupedFailed')
+        const services = sessionServices()
+        if (services && typeof services.uiWorkspace.notify === 'function') {
+          try {
+            services.uiWorkspace.notify({ kind: 'createFailed', message })
+            return
+          } catch {
+            // fall through to the console
+          }
+        }
+        console.warn('[dark-toolbox] ungrouped session creation failed:', message)
+      })
     }
 
     // ---------------------------------------------------------------------
@@ -463,6 +547,7 @@ window.__ModuleLoader__.load({
         h('div', { className: 'dt-row-text' },
           h('div', { className: 'dt-row-title' }, props.title),
           h('div', { className: 'dt-row-desc' }, props.desc),
+          props.note ? h('div', { className: 'dt-row-warn' }, props.note) : null,
         ),
         h(Switch, { checked: props.checked, label: props.title, onChange: props.onChange }),
       )
@@ -471,6 +556,54 @@ window.__ModuleLoader__.load({
     function ErrorBar(props) {
       if (!props.message) return null
       return h('div', { className: 'dt-error', role: 'alert' }, props.message)
+    }
+
+    /** Sidebar-foot entry: always available, even when the default stays stock. */
+    function NewUngroupedAction(props) {
+      useLocaleTick()
+      const [busy, setBusy] = React.useState(false)
+      const wide = props?.wide !== false
+      const label = tr('newUngroupedAction')
+      const run = async () => {
+        if (busy) return
+        setBusy(true)
+        try {
+          await launchUngroupedSession()
+        } finally {
+          setBusy(false)
+        }
+      }
+      return h('button', {
+        type: 'button',
+        className: `dt-new-ungrouped${wide ? '' : ' rail'}`,
+        title: label,
+        'aria-label': label,
+        disabled: busy,
+        onClick: run,
+      },
+        h('svg', {
+          width: 16,
+          height: 16,
+          viewBox: '0 0 16 16',
+          fill: 'none',
+          'aria-hidden': 'true',
+          className: 'dt-new-ungrouped-icon',
+        },
+          h('path', {
+            d: 'M3.4 3.2h9.2a1.4 1.4 0 0 1 1.4 1.4v5.1a1.4 1.4 0 0 1-1.4 1.4H7.2L4 13.2v-2.1H3.4A1.4 1.4 0 0 1 2 9.7V4.6a1.4 1.4 0 0 1 1.4-1.4Z',
+            stroke: 'currentColor',
+            strokeWidth: '1.2',
+            strokeLinejoin: 'round',
+          }),
+          h('path', {
+            d: 'M8 5.1v3.4M6.3 6.8h3.4',
+            stroke: 'currentColor',
+            strokeWidth: '1.2',
+            strokeLinecap: 'round',
+          }),
+        ),
+        wide ? h('span', { className: 'dt-new-ungrouped-label' }, busy ? tr('creatingUngrouped') : label) : null,
+      )
     }
 
     // ---------------------------------------------------------------------
@@ -517,6 +650,18 @@ window.__ModuleLoader__.load({
             desc: tr('keepFinishedDesc'),
             checked: current.keepFinished,
             onChange: (next) => updateSetting('keepFinished', next),
+          }),
+        ),
+        h('div', { className: 'dt-group' },
+          h('div', { className: 'dt-group-head' }, tr('groupSession')),
+          h(SettingRow, {
+            title: tr('noWorkspaceTitle'),
+            desc: tr('noWorkspaceDesc'),
+            note: current.noWorkspaceNewSession && !newSessionOverrideReady
+              ? tr('overrideUnavailable')
+              : tr('noWorkspaceEntry'),
+            checked: current.noWorkspaceNewSession,
+            onChange: (next) => updateSetting('noWorkspaceNewSession', next),
           }),
         ),
         h('div', { className: 'dt-group' },
@@ -785,6 +930,7 @@ window.__ModuleLoader__.load({
       .dt-row-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
       .dt-row-title { font-size: 14px; line-height: 22px; color: var(--dsw-alias-label-primary); }
       .dt-row-desc { font-size: 12px; line-height: 18px; color: var(--dsw-alias-label-secondary); }
+      .dt-row-warn { font-size: 11px; line-height: 17px; color: var(--dsw-alias-state-warn-primary); }
       .dt-switch { position: relative; flex: none; width: 36px; height: 20px; padding: 0; box-sizing: border-box; border: 1px solid var(--dsw-alias-border-l2); border-radius: 10px; background: var(--dsw-alias-bg-layer-2); cursor: pointer; transition: background .15s ease, border-color .15s ease; }
       .dt-switch.on { background: var(--dsw-alias-brand-primary); border-color: var(--dsw-alias-brand-primary); }
       .dt-switch:focus-visible { outline: 2px solid var(--dsw-alias-brand-primary); outline-offset: 2px; }
@@ -794,6 +940,13 @@ window.__ModuleLoader__.load({
       .dt-badge { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; padding: 4px 12px; border: 1px solid var(--dsw-alias-border-l2); border-radius: 999px; background: var(--dsw-alias-bg-layer-2); font-size: 12px; line-height: 18px; }
       .dt-badge-name { font-weight: 600; color: var(--dsw-alias-label-primary); }
       .dt-badge-tag { color: var(--dsw-alias-label-secondary); font-variant-numeric: tabular-nums; }
+      .dt-new-ungrouped { display: flex; align-items: center; justify-content: flex-start; gap: 8px; flex: 0 1 auto; width: auto; max-width: 100%; min-width: 0; height: 32px; margin: 0 2px 8px; padding: 0 8px; box-sizing: border-box; border: none; border-radius: 8px; background: transparent; color: var(--dsw-alias-label-secondary); font: inherit; font-size: 13px; line-height: 20px; text-align: left; cursor: pointer; }
+      .dt-new-ungrouped:hover { background: var(--dsw-alias-bg-layer-2); color: var(--dsw-alias-label-primary); }
+      .dt-new-ungrouped:focus-visible { outline: 2px solid var(--dsw-alias-brand-primary); outline-offset: 1px; }
+      .dt-new-ungrouped:disabled { opacity: .55; cursor: default; }
+      .dt-new-ungrouped.rail { width: 36px; height: 36px; justify-content: center; margin: 0 0 6px; padding: 0; }
+      .dt-new-ungrouped-icon { flex: none; }
+      .dt-new-ungrouped-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .dt-tab-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
       .dt-tab-heading { min-width: 0; }
       .dt-tab-title { font-size: 17px; line-height: 24px; font-weight: 600; }
@@ -887,6 +1040,66 @@ window.__ModuleLoader__.load({
         order: 16,
         label: () => tr('nav'),
       }, SettingsSection)), 'dark-toolbox.settings')
+
+      // New Session default: the shipped global action (button + shortcut) calls
+      // startSession() with no workspace; its own policy then falls back to the
+      // current or most recent workspace. Take that one call only, so per-workspace
+      // "+" actions keep their target. Restore the prototype method on teardown.
+      ctx.inject(['uiWorkspace', 'sessions', 'workspaces'], (sessionCtx) => {
+        sessionCtx.effect(() => {
+          const services = sessionServices()
+          if (!services) return undefined
+          const { uiWorkspace } = services
+          const original = uiWorkspace.startSession
+          let wrapper = null
+          let installed = false
+
+          const restore = () => {
+            if (!installed) return
+            if (uiWorkspace.startSession === wrapper) uiWorkspace.startSession = original
+            installed = false
+            wrapper = null
+            newSessionOverrideReady = false
+          }
+
+          const install = () => {
+            if (installed || !getSettings().noWorkspaceNewSession) return
+            wrapper = function (workspaceId, options) {
+              if (workspaceId === undefined && options === undefined && getSettings().noWorkspaceNewSession) {
+                void launchUngroupedSession()
+                return
+              }
+              return original.call(uiWorkspace, workspaceId, options)
+            }
+            try {
+              uiWorkspace.startSession = wrapper
+              installed = true
+              newSessionOverrideReady = true
+            } catch (error) {
+              wrapper = null
+              console.warn('[dark-toolbox] cannot take over the New Session default:', error)
+            }
+          }
+
+          const sync = () => {
+            if (getSettings().noWorkspaceNewSession) install()
+            else restore()
+          }
+          const off = subscribeSettings(sync)
+          sync()
+          return () => {
+            off()
+            restore()
+          }
+        }, 'dark-toolbox.new-session-default')
+
+        sessionCtx.effect(() => sessionCtx.slots.inject('sidebar.footer.action', () => sessionCtx.slots.register({
+          name: 'sidebar.footer.action',
+          id: 'dark-toolbox-new-ungrouped',
+          order: 10,
+          label: () => tr('newUngroupedAction'),
+        }, NewUngroupedAction)), 'dark-toolbox.new-ungrouped-entry')
+      })
 
       // The install tab follows the feature switch: unregistering it removes
       // the tab immediately, and the page falls back to Installed.
