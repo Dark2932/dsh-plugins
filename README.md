@@ -15,10 +15,10 @@
 
 [插件说明](dark-toolbox/README.md) · [开发文档](_docs/dark-toolbox.md)
 
-#### 安装
+#### 安装（桌面端请直接输入引号内地址）
 
 ```sh
-dsh plugin --profile desktop add "https://github.com/Dark2932/dsh-plugins#path:/dark-toolbox" //桌面端请直接输入引号内地址
+dsh plugin --profile desktop add "https://github.com/Dark2932/dsh-plugins#path:/dark-toolbox"
 ```
 
 ### ssh-link
@@ -31,10 +31,10 @@ dsh plugin --profile desktop add "https://github.com/Dark2932/dsh-plugins#path:/
 
 [插件说明](ssh-link/README.md) · [开发文档](_docs/ssh-link.md)
 
-#### 安装
+#### 安装（桌面端请直接输入引号内地址）
 
 ```sh
-dsh plugin --profile desktop add "https://github.com/Dark2932/dsh-plugins#path:/ssh-link" //桌面端请直接输入引号内地址
+dsh plugin --profile desktop add "https://github.com/Dark2932/dsh-plugins#path:/ssh-link"
 ```
 
 ## 开发
