@@ -5,11 +5,10 @@
 | 插件 | 版本 | 作用 | 文档 |
 | --- | --- | --- | --- |
 | `dark-toolbox` | 0.2.0 | 后台插件安装、安装列表、未分组新对话、统一设置页 | [dark-toolbox.md](dark-toolbox.md) |
-| `ssh-link` | 0.1.0 | SSH 主机管理、远端终端、Agent 远端工具 | [ssh-link.md](ssh-link.md) |
 
 ## 共同结构
 
-两个插件都遵循 DSH 的 bundle 形式：
+所有插件都遵循 DSH 的 bundle 形式：
 
 ```text
 <plugin>/
